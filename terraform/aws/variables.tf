@@ -6,3 +6,7 @@ variable "public_key_path" {
   type    = string
   default = "~/.ssh/id_rsa.pub"
 }
+variable "worker_count" {
+  type = number
+  default = 1
+}

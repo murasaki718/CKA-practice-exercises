@@ -11,7 +11,7 @@ Doc: https://kubernetes.io/docs/reference/access-authn-authz/rbac/
 
 If you don't have cluster nodes yet, check the terraform deployment from below: [Provision underlying infrastructure to deploy a Kubernetes cluster](https://github.com/murasaki718/CKA-practice-exercises/blob/CKA-v1.31/cluster-architecture-installation-configuration.md#provision-underlying-infrastructure-to-deploy-a-kubernetes-cluster)
 
-Installation from [scratch using Kelsey Hightower's kubernetes-the-hard-way](https://github.com/kelseyhightower/kubernetes-the-hard-way/) is too time-consuming but not irrelevant. We will be using kubeadm (v1.31.4) to perform the install of Kubernetes cluster.
+Installation from [scratch using Kelsey Hightower's kubernetes-the-hard-way](https://github.com/kelseyhightower/kubernetes-the-hard-way/) is too time-consuming but not irrelevant. We will be using kubeadm (v1.31.1) to perform the install of Kubernetes cluster.
 
 ### Install containerd runtime
 
@@ -110,7 +110,7 @@ Make sure the nodes have different hostnames.
 
 On control-plane node:
 ```bash
-sudo kubeadm init --kubernetes-version=1.31.4 --pod-network-cidr=10.244.0.0/16
+sudo kubeadm init --kubernetes-version=1.31.1 --pod-network-cidr=10.244.0.0/16
 ```
 
 Run the output of the init command on the other nodes:
@@ -146,9 +146,9 @@ kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/
 ```bash
 kubectl get nodes
 NAME               STATUS   ROLES           AGE     VERSION
-k8s-controller   Ready    control-plane   3m29s   v1.31.4
-k8s-node-1          Ready    <none>          114s    v1.31.4
-k8s-node-2          Ready    <none>          77s     v1.31.4
+k8s-controller   Ready    control-plane   3m29s   v1.31.1
+k8s-node-1          Ready    <none>          114s    v1.31.1
+k8s-node-2          Ready    <none>          77s     v1.31.1
 ```
 
 </p>

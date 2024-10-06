@@ -40,7 +40,6 @@ resource "aws_internet_gateway" "k8s" {
   }
 }
 
-
 # Create Route Table
 resource "aws_route_table" "k8s_rtb" {
   vpc_id = aws_vpc.k8s_vpc.id
@@ -54,16 +53,28 @@ resource "aws_route_table" "k8s_rtb" {
     Name = "rt-${local.k8s_name}"
   }
 }
+
 # Create Route Table association for public VPC subnet
 resource "aws_route_table_association" "rta_k8s_subnet" {
   subnet_id      = aws_subnet.k8s_subnet.id
   route_table_id = aws_route_table.k8s_rtb.id
 }
 
+# Create EIP for Controller
+resource "aws_eip" "controller" {
+ instance = aws_instance.controller.id
+}
+
+# Create EIP for Workers
+resource "aws_eip" "workers" {
+  count = var.worker_count
+  instance = aws_instance.workers[count.index].id
+}
+
 # Launch EC2 instances
 resource "aws_instance" "controller" {
   ami                  = data.aws_ami.image.id
-  instance_type        = "t2.micro"
+  instance_type        = "t2.medium"
   key_name             = var.key_pair_name
   ebs_optimized        = false
   hibernation          = false
@@ -72,7 +83,6 @@ resource "aws_instance" "controller" {
   monitoring           = false
   tenancy              = "default"
 
-  associate_public_ip_address = true
   subnet_id                   = aws_subnet.k8s_subnet.id
 
   vpc_security_group_ids = [aws_security_group.master.id]
@@ -95,9 +105,9 @@ resource "aws_instance" "controller" {
 }
 
 resource "aws_instance" "workers" {
-  count                = 1
+  count                = var.worker_count
   ami                  = data.aws_ami.image.id
-  instance_type        = "t2.micro"
+  instance_type        = "t2.medium"
   key_name             = var.key_pair_name
   ebs_optimized        = false
   hibernation          = false
@@ -106,7 +116,6 @@ resource "aws_instance" "workers" {
   monitoring           = false
   tenancy              = "default"
 
-  associate_public_ip_address = true
   subnet_id                   = aws_subnet.k8s_subnet.id
 
   vpc_security_group_ids = [aws_security_group.worker_node.id]
