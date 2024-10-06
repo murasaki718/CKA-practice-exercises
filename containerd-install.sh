@@ -1,13 +1,12 @@
 #!/bin/bash
 
 # initial system update and upgrade
-apt-get update && apt-get upgrade
-apt-get install -y sudo vim
+sudo apt-get update && apt-get upgrade
 
 cat <<EOF > machines.txt
-192.168.122.206 k8s-controller.kubernetes.local k8s-controller
-192.168.122.173 k8s-node1.kubernetes.local k8s-node1 10.200.0.0/24
-192.168.122.197 k8s-node2.kubernetes.local k8s-node2 10.200.1.0/24
+10.0.1.175 k8s-controller.kubernetes.local k8s-controller
+10.0.1.207 k8s-node1.kubernetes.local k8s-node1 10.200.0.0/24
+#192.168.122.197 k8s-node2.kubernetes.local k8s-node2 10.200.1.0/24
 EOF
 
 # set dns hosts file
@@ -19,15 +18,7 @@ while read IP FQDN HOST SUBNET; do
     echo $ENTRY >> hosts
 done < machines.txt
 
-sudo cat hosts >> /etc/hosts
-
-# setup ssh access
-sudo sed -i \
-  's/^#PermitRootLogin.*/PermitRootLogin yes/' \
-  /etc/ssh/sshd_config
-
-sudo systemctl restart sshd
-
+sudo cat hosts | sudo tee -a /etc/hosts
 
 # disabled swap file
 swapoff -a
@@ -57,11 +48,10 @@ sudo sysctl --system
 # Install containerd 
 ## Set up the repository
 ### Install packages to allow apt to use a repository over HTTPS
-sudo apt-get update
 sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
 
 ## Install packages
-sudo apt-get update && sudo apt-get install -y containerd
+sudo apt-get install -y containerd
 
 # Configure containerd
 sudo mkdir -p /etc/containerd
@@ -72,8 +62,6 @@ sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/conf
 sudo systemctl restart containerd
 
 # Install Kubeadm
-sudo apt-get update
-sudo apt-get install -y apt-transport-https ca-certificates curl
 curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 sudo apt-get update
