@@ -1,5 +1,5 @@
 # Create security group for Worker nodes
-resource "aws_security_group" "worker_node" {
+resource "aws_security_group" "worker_nodes" {
   name   = "worker-nodes-sg"
   vpc_id = aws_vpc.k8s_vpc.id
 
@@ -43,6 +43,6 @@ resource "aws_security_group" "worker_node" {
   }
 
   tags = {
-    Name = "sg-worker-${local.k8s_name}"
+    Name = "sg-worker-nodes-${local.k8s_name}"
   }
 }
