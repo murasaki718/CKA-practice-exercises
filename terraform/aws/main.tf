@@ -62,13 +62,13 @@ resource "aws_route_table_association" "rta_k8s_subnet" {
 
 # Create EIP for Controller
 resource "aws_eip" "controller" {
- instance = aws_instance.controller.id
+  instance = aws_instance.controller.id
 }
 
-# Create EIP for Workers
-resource "aws_eip" "workers" {
-  count = var.worker_count
-  instance = aws_instance.workers[count.index].id
+# Create EIP for Worker Nodes
+resource "aws_eip" "worker_nodes" {
+  count    = var.worker_node_count
+  instance = aws_instance.nodes[count.index].id
 }
 
 # Launch EC2 instances
@@ -83,11 +83,8 @@ resource "aws_instance" "controller" {
   monitoring           = false
   tenancy              = "default"
 
-  subnet_id                   = aws_subnet.k8s_subnet.id
-
+  subnet_id              = aws_subnet.k8s_subnet.id
   vpc_security_group_ids = [aws_security_group.master.id]
-  #security_groups = [aws_security_group.allow_tls_http_ssh.id]
-
 
   tags = {
     Name      = "k8s-controller"
@@ -104,8 +101,8 @@ resource "aws_instance" "controller" {
   }
 }
 
-resource "aws_instance" "workers" {
-  count                = var.worker_count
+resource "aws_instance" "nodes" {
+  count                = var.worker_node_count
   ami                  = data.aws_ami.image.id
   instance_type        = "t2.medium"
   key_name             = var.key_pair_name
@@ -116,9 +113,8 @@ resource "aws_instance" "workers" {
   monitoring           = false
   tenancy              = "default"
 
-  subnet_id                   = aws_subnet.k8s_subnet.id
-
-  vpc_security_group_ids = [aws_security_group.worker_node.id]
+  subnet_id              = aws_subnet.k8s_subnet.id
+  vpc_security_group_ids = [aws_security_group.worker_nodes.id]
 
   metadata_options {
     http_endpoint               = "enabled"
@@ -137,12 +133,12 @@ resource "aws_instance" "workers" {
   }
 
   tags = {
-    Name      = "k8s-worker-${count.index + 1}"
+    Name      = "k8s-node${count.index + 1}"
     terraform = "true"
     project   = "kube-auto"
   }
   volume_tags = {
-    Name      = "k8s-worker-${count.index + 1}-volume"
+    Name      = "k8s-node${count.index + 1}-volume"
     terraform = "true"
     project   = "kube-auto"
   }
