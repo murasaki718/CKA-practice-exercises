@@ -11,7 +11,7 @@ Doc: https://kubernetes.io/docs/reference/access-authn-authz/rbac/
 
 If you don't have cluster nodes yet, check the terraform deployment from below: [Provision underlying infrastructure to deploy a Kubernetes cluster](https://github.com/murasaki718/CKA-practice-exercises/blob/CKA-v1.31/cluster-architecture-installation-configuration.md#provision-underlying-infrastructure-to-deploy-a-kubernetes-cluster)
 
-Installation from [scratch using Kelsey Hightower's kubernetes-the-hard-way](https://github.com/kelseyhightower/kubernetes-the-hard-way/) is too time-consuming but not irrelevant. We will be using kubeadm (v1.31.1) to perform the install of Kubernetes cluster.
+Installation from [scratch using Kelsey Hightower's kubernetes-the-hard-way](https://github.com/kelseyhightower/kubernetes-the-hard-way/) is too time-consuming but not irrelevant. We will be using kubeadm (v1.30.5) to perform the installation of Kubernetes cluster.
 
 ### Install containerd runtime
 
@@ -88,11 +88,11 @@ Do this on all three-nodes:
 sudo apt-get update
 sudo apt-get install -y apt-transport-https ca-certificates curl
 
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 sudo apt-get update
-sudo apt-get install -y kubelet=1.31.1-1.1 kubeadm=1.31.1-1.1 kubectl=1.31.1-1.1
+sudo apt-get install -y kubelet=1.30.5-1.1 kubeadm=1.30.5-1.1 kubectl=1.30.5-1.1
 sudo apt-mark hold kubelet kubeadm kubectl
 ```
 
@@ -110,7 +110,7 @@ Make sure the nodes have different hostnames.
 
 On control-plane node:
 ```bash
-sudo kubeadm init --kubernetes-version=1.31.1 --pod-network-cidr=10.244.0.0/16
+sudo kubeadm init --kubernetes-version=1.30.5 --pod-network-cidr=10.244.0.0/16
 ```
 
 Run the output of the init command on the other nodes:
@@ -146,9 +146,9 @@ kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/
 ```bash
 kubectl get nodes
 NAME               STATUS   ROLES           AGE     VERSION
-k8s-controller   Ready    control-plane   3m29s   v1.31.1
-k8s-node-1          Ready    <none>          114s    v1.31.1
-k8s-node-2          Ready    <none>          77s     v1.31.1
+k8s-controller      Ready    control-plane   3m29s   v1.30.5
+k8s-node-1          Ready    <none>          114s    v1.30.5
+k8s-node-2          Ready    <none>          77s     v1.30.5
 ```
 
 </p>
@@ -176,13 +176,13 @@ sudo sh -c 'echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] h
 
 # Upgrade kubeadm
 sudo apt-mark unhold kubeadm
-sudo apt-get update && sudo apt-get install -y kubeadm=1.31.0-1.1
+sudo apt-get update && sudo apt-get install -y kubeadm=1.31.1-1.1
 sudo apt-mark hold kubeadm
 
 # Upgrade control-plane node
 kubectl drain k8s-controller --ignore-daemonsets
 sudo kubeadm upgrade plan
-sudo kubeadm upgrade apply v1.31.0
+sudo kubeadm upgrade apply v1.31.1
 
 # Update Network Plugin
 
@@ -194,7 +194,7 @@ kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.1/
 
 # Upgrade kubelet and kubectl
 sudo apt-mark unhold kubelet kubectl
-sudo apt-get update && sudo apt-get install -y kubelet=1.31.0-1.1 kubectl=1.31.0-1.1
+sudo apt-get update && sudo apt-get install -y kubelet=1.31.1-1.1 kubectl=1.31.1-1.1
 sudo apt-mark hold kubelet kubectl
 sudo systemctl daemon-reload
 sudo systemctl restart kubelet
@@ -211,7 +211,7 @@ sudo sh -c 'echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] h
 
 # Upgrade kubeadm
 sudo apt-mark unhold kubeadm
-sudo apt-get update && sudo apt-get install -y kubeadm=1.31.0-1.1
+sudo apt-get update && sudo apt-get install -y kubeadm=1.31.1-1.1
 sudo apt-mark hold kubeadm
 
 # Upgrade the other node
@@ -220,7 +220,7 @@ sudo kubeadm upgrade node
 
 # Upgrade kubelet and kubectl
 sudo apt-mark unhold kubelet kubectl
-sudo apt-get update && sudo apt-get install -y kubelet=1.31.0-1.1 kubectl=1.31.0-1.1
+sudo apt-get update && sudo apt-get install -y kubelet=1.31.1-1.1 kubectl=1.31.1-1.1
 sudo apt-mark hold kubelet kubectl
 sudo systemctl daemon-reload
 sudo systemctl restart kubelet
@@ -229,14 +229,14 @@ sudo systemctl restart kubelet
 kubectl uncordon k8s-node-1
 ```
 
-Verify that the nodes are upgraded to v1.31.0:
+Verify that the nodes are upgraded to v1.31.1:
 
 ```bash
 kubectl get nodes
 NAME               STATUS                     ROLES           AGE   VERSION
-k8s-controller   Ready                      control-plane   15m   v1.31.0
-k8s-node-1         Ready,SchedulingDisabled   <none>          13m   v1.31.0
-k8s-node-2         Ready,SchedulingDisabled   <none>          13m   v1.31.0
+k8s-controller     Ready                      control-plane   15m   v1.31.1
+k8s-node-1         Ready,SchedulingDisabled   <none>          13m   v1.31.1
+k8s-node-2         Ready,SchedulingDisabled   <none>          13m   v1.31.1
 ```
 
 </p>
@@ -247,7 +247,7 @@ k8s-node-2         Ready,SchedulingDisabled   <none>          13m   v1.31.0
 <details><summary>Solution</summary>
 <p>
 
-When only having only one control plane node in your cluster, you cannot upgrade the OS system (with reboot) without losing temporary access to your cluster.
+When we only have one control plane node in your cluster, you cannot upgrade the OS system (with reboot) without losing temporary access to your cluster.
 
 Here we will upgrade our worker nodes:
 
