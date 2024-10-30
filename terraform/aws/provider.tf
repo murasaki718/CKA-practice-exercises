@@ -1,11 +1,11 @@
 terraform {
-  cloud {
-    organization = "ORG"
-
-    workspaces {
-      name = "WORKSPACE"
-    }
-  }
+#  cloud {
+#    organization = "ORG"
+#
+#    workspaces {
+#      name = "WORKSPACE"
+#    }
+#  }
 
   required_version = ">= 1.9"
   required_providers {
