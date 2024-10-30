@@ -2,3 +2,7 @@
 *.hcl
 .terraform/
 !.terraform.lock.hcl
+.devbox/*
+.idea/*
+bin/*
+.venv/*
