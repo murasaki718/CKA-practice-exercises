@@ -11,7 +11,7 @@ Doc: https://kubernetes.io/docs/reference/access-authn-authz/rbac/
 
 If you don't have cluster nodes yet, check the terraform deployment from below: [Provision underlying infrastructure to deploy a Kubernetes cluster](https://github.com/murasaki718/CKA-practice-exercises/blob/CKA-v1.31/cluster-architecture-installation-configuration.md#provision-underlying-infrastructure-to-deploy-a-kubernetes-cluster)
 
-Installation from [scratch using Kelsey Hightower's kubernetes-the-hard-way](https://github.com/kelseyhightower/kubernetes-the-hard-way/) is too time-consuming but not irrelevant. We will be using kubeadm (v1.30.5) to perform the installation of Kubernetes cluster.
+Installation from [scratch using Kelsey Hightower's kubernetes-the-hard-way](https://github.com/kelseyhightower/kubernetes-the-hard-way/) is too time-consuming but not irrelevant. We will be using kubeadm (v1.30.5) to install the Kubernetes cluster.
 
 ### Install containerd runtime
 
@@ -20,7 +20,7 @@ Installation from [scratch using Kelsey Hightower's kubernetes-the-hard-way](htt
 
 Doc: https://kubernetes.io/docs/setup/production-environment/container-runtimes/
 
-We will do this using only three-nodes (here is the path to the script https://github.com/murasaki718/CKA-practice-exercises/blob/CKA-v1.31/containerd-install.sh):
+We will do this using only three nodes (here is the path to the script https://github.com/murasaki718/CKA-practice-exercises/blob/CKA-v1.31/containerd-install.sh):
 
 ```bash
 # containerd preinstall configuration
@@ -323,22 +323,36 @@ Doc: https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/
 Check the version of your etcd cluster, which depends on how you installed it.
 
 ```bash
-kubectl exec -it -n kube-system etcd-k8s-controller -- etcd --version
+ETCD_POD_NAME=$(kubectl get po -A --no-headers -o custom-columns=":metadata.name" | grep etcd)
+kubectl exec -it -n kube-system $ETCD_POD_NAME -- etcd --version
 etcd Version: 3.5.15
 Git SHA: 0452feec7
 Go Version: go1.16.15
 Go OS/Arch: linux/amd64
 ```
 
+If using connecting to an external etcd instance, Download the etcd client 
 ```bash
 # Download etcd client
 wget https://github.com/etcd-io/etcd/releases/download/v3.5.15/etcd-v3.5.15-linux-amd64.tar.gz
 tar xzvf etcd-v3.5.15-linux-amd64.tar.gz
 sudo mv etcd-v3.5.15-linux-amd64/etcdctl /usr/local/bin
 sudo mv etcd-v3.5.15-linux-amd64/etcdutl /usr/local/bin
+```
 
+You are going to need the file locations first of the trusted-ca-file, cert-file, and key-file
+```bash
+# review the yaml spec.container command and extract the required information
+kubectl get po $(echo $ETCD_CONTAINER) -n kube-system -o "jsonpath="{.spec.containers}"" | jq ".[].command"
+
+CACERT="/run/config/pki/etcd/ca.crt"
+CERT="/run/config/pki/etcd/server.crt"
+KEY="/run/config/pki/etcd/server.key"
+```
+
+```bash
 # save etcd snapshot
-sudo etcdctl snapshot save --endpoints 192.168.254.11:2379 snapshot.db --cacert /etc/kubernetes/pki/etcd/server.crt --cert /etc/kubernetes/pki/etcd/ca.crt --key /etc/kubernetes/pki/etcd/ca.key
+ETCDCTL_API=3 etcdctl --endpoints https://127.0.0.1:2379 --cacert=$(echo $CACERT) --cert=$(echo $CERT) --key=$(echo $KEY) snapshot save snapshot.db
 
 # View the snapshot
 sudo etcdutl --write-out=table snapshot status snapshot.db 
@@ -347,6 +361,17 @@ sudo etcdutl --write-out=table snapshot status snapshot.db
 +---------+----------+------------+------------+
 | 74116f1 |     2616 |       2639 |     4.5 MB |
 +---------+----------+------------+------------+
+
+#if etcdutl is unavailable
+etcdctl --write-out=table snapshot status snapshot.db
+Deprecated: Use `etcdutl snapshot status` instead.
+
++----------+----------+------------+------------+
+|   HASH   | REVISION | TOTAL KEYS | TOTAL SIZE |
++----------+----------+------------+------------+
+| cbf239e9 |    35895 |        946 |     1.8 MB |
++----------+----------+------------+------------+
+
 ```
 
 </p>
@@ -358,6 +383,38 @@ sudo etcdutl --write-out=table snapshot status snapshot.db
 <p>
 
 Doc: https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#backing-up-an-etcd-cluster
+
+Retrieve the Data dir location
+```bash
+kubectl get po $(echo $ETCD_CONTAINER) -n kube-system -o "jsonpath="{.spec.containers}"" | jq ".[].command" | grep "data-dir"
+
+DATADIR="/var/lib/etcd"
+```
+Restore etcd from database snapshot/backup
+```bash
+# We are going to have to create a new directory to restore the contents of the backup
+etcdutl --data-dir /var/lib/etcd-backup snapshot restore snapshot.db
+
+# If we restore to the existing directory we will be presented with an ERROR message
+etcdutl --data-dir /var/lib/etcd snapshot restore snapshot.db
+
+#Deprecated: Use `etcdutl snapshot restore` instead.
+#Error: data-dir "/var/lib/etcd/" not empty or could not be read
+
+# If etcdutl is not available use the following command in place
+ETCDCTL_API=3 etcdctl --endpoints https://127.0.0.1:2379 --cacert=$(echo $CACERT) --cert=$(echo $CERT) --key=$(echo $KEY) --data-dir=/var/lib/etcd-backup snapshot restore snapshot.db
+Deprecated: Use `etcdutl snapshot restore` instead.
+
+2024-10-30T03:16:06Z    info    snapshot/v3_snapshot.go:260     restoring snapshot      {"path": "snapshot.db", "wal-dir": "/var/lib/etcd-backup/member/wal", "data-dir": "/var/lib/etcd-backup", "snap-dir": "/var/lib/etcd-backup/member/snap"}
+2024-10-30T03:16:06Z    info    membership/store.go:141 Trimming membership information from the backend...
+2024-10-30T03:16:06Z    info    membership/cluster.go:421       added member    {"cluster-id": "cdf818194e3a8c32", "local-member-id": "0", "added-peer-id": "8e9e05c52164694d", "added-peer-peer-urls": ["http://localhost:2380"]}
+2024-10-30T03:16:06Z    info    snapshot/v3_snapshot.go:287     restored snapshot       {"path": "snapshot.db", "wal-dir": "/var/lib/etcd-backup/member/wal", "data-dir": "/var/lib/etcd-backup", "snap-dir": "/var/lib/etcd-backup/member/snap"}
+```
+
+Updating the etcd yaml 
+```bash
+#TBD
+```
 
 </p>
 </details>
