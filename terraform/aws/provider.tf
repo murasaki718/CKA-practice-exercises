@@ -1,4 +1,12 @@
 terraform {
+#  cloud {
+#    organization = "ORG"
+#
+#    workspaces {
+#      name = "WORKSPACE"
+#    }
+#  }
+
   required_version = ">= 1.9"
   required_providers {
     aws = {
@@ -10,5 +18,5 @@ terraform {
 
 # Configure the AWS Provider
 provider "aws" {
-  region = "us-east-1"
+  region = var.aws_region
 }
