@@ -82,7 +82,7 @@ sudo systemctl restart containerd.service
 
 Doc: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 
-Do this on all three-nodes:
+Do this on all three nodes:
 
 ```bash
 sudo apt-get update
