@@ -1,6 +1,7 @@
-output "nodes_public_ip" {
-  value = {
-    Controller = try(module.controller.public_ip, null)
-    Workers = try(module.worker_nodes[*].public_ip, null)
-  }
+output "controller_node_public_ip" {
+  value = module.controller[*].public_ip
+}
+
+output "worker_node_public_ip" {
+  value = module.worker_nodes[*].public_ip
 }

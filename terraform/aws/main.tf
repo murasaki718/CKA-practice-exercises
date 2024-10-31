@@ -1,7 +1,6 @@
 resource "aws_key_pair" "k8s_cluster_key" {
   key_name   = var.key_pair_name
   public_key = base64decode(var.public_key_path)
-  #  public_key = file(var.public_key_path) #
   tags = {
     Name        = "k8s-key"
     Environment = "test"
@@ -61,9 +60,10 @@ resource "aws_route_table_association" "rta_k8s_subnet" {
   route_table_id = aws_route_table.k8s_rtb.id
 }
 
-# Create EIP for Controller
+# Create EIP for Controller Nodes
 resource "aws_eip" "controller" {
-  instance = module.controller.id
+  count    = var.controller_node_count
+  instance = module.controller[count.index].id
 }
 
 # Create EIP for Worker Nodes
@@ -75,7 +75,9 @@ resource "aws_eip" "worker_nodes" {
 # Launch EC2 instances for Controller
 module "controller" {
   source = "terraform-aws-modules/ec2-instance/aws"
+  count  = var.controller_node_count
 
+  name                                 = "k8s-controller${count.index + 1}"
   ami                                  = data.aws_ami.image.id
   instance_type                        = "t2.medium"
   key_name                             = aws_key_pair.k8s_cluster_key.key_name
@@ -117,12 +119,12 @@ module "controller" {
   ]
 
   tags = {
-    Name      = "k8s-controller"
+    Name      = "k8s-controller${count.index + 1}"
     terraform = "true"
     project   = "kube-auto"
   }
   volume_tags = {
-    Name      = "k8s-controller-volume"
+    Name      = "k8s-controller${count.index + 1}-volume"
     terraform = "true"
     project   = "kube-auto"
   }
