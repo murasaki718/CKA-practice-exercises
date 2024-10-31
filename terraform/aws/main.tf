@@ -77,7 +77,7 @@ module "controller" {
   source = "terraform-aws-modules/ec2-instance/aws"
   count  = var.controller_node_count
 
-  name                                 = "k8s-controller${count.index + 1}"
+  name                                 = "k8s-controller-${count.index + 1}"
   ami                                  = data.aws_ami.image.id
   instance_type                        = "t2.medium"
   key_name                             = aws_key_pair.k8s_cluster_key.key_name
@@ -119,12 +119,12 @@ module "controller" {
   ]
 
   tags = {
-    Name      = "k8s-controller${count.index + 1}"
+    Name      = "k8s-controller-${count.index + 1}"
     terraform = "true"
     project   = "kube-auto"
   }
   volume_tags = {
-    Name      = "k8s-controller${count.index + 1}-volume"
+    Name      = "k8s-controller-${count.index + 1}-volume"
     terraform = "true"
     project   = "kube-auto"
   }
@@ -140,7 +140,7 @@ module "worker_nodes" {
   source = "terraform-aws-modules/ec2-instance/aws"
   count  = var.worker_node_count
 
-  name                 = "k8s-node${count.index + 1}"
+  name                 = "k8s-node-${count.index + 1}"
   ami                  = data.aws_ami.image.id
   instance_type        = "t2.medium"
   key_name             = var.key_pair_name
@@ -178,12 +178,12 @@ module "worker_nodes" {
   ]
 
   tags = {
-    Name      = "k8s-node${count.index + 1}"
+    Name      = "k8s-node-${count.index + 1}"
     terraform = "true"
     project   = "kube-auto"
   }
   volume_tags = {
-    Name      = "k8s-node${count.index + 1}-volume"
+    Name      = "k8s-node-${count.index + 1}-volume"
     terraform = "true"
     project   = "kube-auto"
   }
