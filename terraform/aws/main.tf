@@ -132,7 +132,7 @@ module "controller" {
 
 resource "null_resource" "wait_for_controller_instance" {
   provisioner "local-exec" {
-    command = "aws ec2 wait instance-running --instance-ids ${module.controller.id} --region us-east-1"
+    command = "aws ec2 wait instance-running --instance-ids ${module.controller[*].id} --region us-east-1"
   }
 }
 
@@ -191,6 +191,6 @@ module "worker_nodes" {
 
 resource "null_resource" "wait_for_worker_instance" {
   provisioner "local-exec" {
-    command = "aws ec2 wait instance-running --instance-ids ${module.controller.id} --region us-east-1"
+    command = "aws ec2 wait instance-running --instance-ids ${module.worker_nodes[*].id} --region us-east-1"
   }
 }
