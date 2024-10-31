@@ -6,7 +6,7 @@ sudo apt-get update && apt-get upgrade
 cat <<EOF > machines.txt
 10.0.1.175 k8s-controller.kubernetes.local k8s-controller
 10.0.1.207 k8s-node1.kubernetes.local k8s-node1 10.200.0.0/24
-#192.168.122.197 k8s-node2.kubernetes.local k8s-node2 10.200.1.0/24
+10.0.1.210 k8s-node2.kubernetes.local k8s-node2 10.200.1.0/24
 EOF
 
 # set dns hosts file
@@ -14,8 +14,8 @@ echo "" > hosts
 echo "# Kubernetes The Hard Way" >> hosts
 
 while read IP FQDN HOST SUBNET; do 
-    ENTRY="${IP} ${FQDN} ${HOST}"
-    echo $ENTRY >> hosts
+    ENTRY="${IP} ${FQDN} ${HOST} ${SUBNET}"
+    echo "$ENTRY" >> hosts
 done < machines.txt
 
 sudo cat hosts | sudo tee -a /etc/hosts

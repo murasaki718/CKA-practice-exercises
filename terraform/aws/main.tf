@@ -63,92 +63,134 @@ resource "aws_route_table_association" "rta_k8s_subnet" {
 # Create EIP for Controller Nodes
 resource "aws_eip" "controller" {
   count    = var.controller_node_count
-  instance = aws_instance.controller[count.index].id
+  instance = module.controller[count.index].id
 }
 
 # Create EIP for Worker Nodes
 resource "aws_eip" "worker_nodes" {
   count    = var.worker_node_count
-  instance = aws_instance.nodes[count.index].id
+  instance = module.worker_nodes[count.index].id
 }
 
-# Launch EC2 instances
-resource "aws_instance" "controller" {
-  count                = var.controller_node_count
-  ami                  = data.aws_ami.image.id
-  instance_type        = "t2.medium"
-  key_name             = var.key_pair_name
-  ebs_optimized        = false
-  hibernation          = false
-  iam_instance_profile = aws_iam_instance_profile.assume_instance_profile.id
-  user_data_base64     = base64gzip(file("${path.module}/files/bootstrap.sh"))
-  monitoring           = false
-  tenancy              = "default"
+# Launch EC2 instances for Controller
+module "controller" {
+  source = "terraform-aws-modules/ec2-instance/aws"
+  count  = var.controller_node_count
+
+  name                                 = "k8s-controller-${count.index + 1}"
+  ami                                  = data.aws_ami.image.id
+  instance_type                        = "t2.medium"
+  key_name                             = aws_key_pair.k8s_cluster_key.key_name
+  disable_api_termination              = false
+  ebs_optimized                        = true
+  instance_initiated_shutdown_behavior = "stop"
+  hibernation                          = false
+  iam_instance_profile                 = aws_iam_instance_profile.assume_instance_profile.id
+  user_data_base64                     = base64gzip(file("${path.module}/files/bootstrap.sh"))
+  monitoring                           = false
+  tenancy                              = "default"
 
   subnet_id              = aws_subnet.k8s_subnet.id
   vpc_security_group_ids = [aws_security_group.master.id]
+  cpu_credits            = "unlimited"
 
-  tags = {
-    Name      = "k8s-controller"
-    terraform = "true"
-    project   = "kube-auto"
-  }
-
-  root_block_device {
-    delete_on_termination = true
-    volume_size           = 8
-    encrypted             = true
-    kms_key_id            = "arn:aws:kms:us-east-1:235897040954:key/fbb4742c-8f85-486d-82b7-33188f1638a0"
-    volume_type           = "gp3"
-  }
-}
-
-resource "aws_instance" "nodes" {
-  count                = var.worker_node_count
-  ami                  = data.aws_ami.image.id
-  instance_type        = "t2.medium"
-  key_name             = var.key_pair_name
-  ebs_optimized        = false
-  hibernation          = false
-  iam_instance_profile = aws_iam_instance_profile.assume_instance_profile.id
-  user_data_base64     = base64gzip(file("${path.module}/files/bootstrap.sh"))
-  monitoring           = false
-  tenancy              = "default"
-
-  subnet_id              = aws_subnet.k8s_subnet.id
-  vpc_security_group_ids = [aws_security_group.worker_nodes.id]
-
-  metadata_options {
+  metadata_options = {
     http_endpoint               = "enabled"
     http_protocol_ipv6          = "disabled"
     http_put_response_hop_limit = 2
     http_tokens                 = "required"
     instance_metadata_tags      = "disabled"
   }
-  private_dns_name_options {
-    enable_resource_name_dns_a_record    = false
+  private_dns_name_options = {
+    enable_resource_name_dns_a_record    = true
     enable_resource_name_dns_aaaa_record = false
     hostname_type                        = "ip-name"
   }
-  maintenance_options {
+  maintenance_options = {
     auto_recovery = "default"
   }
-
-  tags = {
-    Name      = "k8s-node${count.index + 1}"
-    terraform = "true"
-    project   = "kube-auto"
-  }
-  volume_tags = {
-    Name      = "k8s-node${count.index + 1}-volume"
-    terraform = "true"
-    project   = "kube-auto"
-  }
-  root_block_device {
+  root_block_device = [{
     delete_on_termination = true
     volume_size           = 8
     encrypted             = true
     kms_key_id            = "arn:aws:kms:us-east-1:235897040954:key/fbb4742c-8f85-486d-82b7-33188f1638a0"
     volume_type           = "gp3"
+    }
+  ]
+
+  tags = {
+    Name      = "k8s-controller-${count.index + 1}"
+    terraform = "true"
+    project   = "kube-auto"
+  }
+  volume_tags = {
+    Name      = "k8s-controller-${count.index + 1}-volume"
+    terraform = "true"
+    project   = "kube-auto"
+  }
+}
+
+resource "null_resource" "wait_for_controller_instance" {
+  provisioner "local-exec" {
+    command = "aws ec2 wait instance-running --instance-ids ${module.controller.id} --region us-east-1"
+  }
+}
+
+module "worker_nodes" {
+  source = "terraform-aws-modules/ec2-instance/aws"
+  count  = var.worker_node_count
+
+  name                 = "k8s-node-${count.index + 1}"
+  ami                  = data.aws_ami.image.id
+  instance_type        = "t2.medium"
+  key_name             = var.key_pair_name
+  ebs_optimized        = true
+  iam_instance_profile = aws_iam_instance_profile.assume_instance_profile.id
+  user_data_base64     = base64gzip(file("${path.module}/files/bootstrap.sh"))
+
+  subnet_id              = aws_subnet.k8s_subnet.id
+  vpc_security_group_ids = [aws_security_group.worker_nodes.id]
+  cpu_credits            = "unlimited"
+
+  metadata_options = {
+    http_endpoint               = "enabled"
+    http_protocol_ipv6          = "disabled"
+    http_put_response_hop_limit = 2
+    http_tokens                 = "required"
+    instance_metadata_tags      = "disabled"
+  }
+  private_dns_name_options = {
+    enable_resource_name_dns_a_record    = true
+    enable_resource_name_dns_aaaa_record = false
+    hostname_type                        = "ip-name"
+  }
+  maintenance_options = {
+    auto_recovery = "default"
+  }
+  root_block_device = [
+    {
+      delete_on_termination = true
+      volume_size           = 8
+      encrypted             = true
+      kms_key_id            = "arn:aws:kms:us-east-1:235897040954:key/fbb4742c-8f85-486d-82b7-33188f1638a0"
+      volume_type           = "gp3"
+    }
+  ]
+
+  tags = {
+    Name      = "k8s-node-${count.index + 1}"
+    terraform = "true"
+    project   = "kube-auto"
+  }
+  volume_tags = {
+    Name      = "k8s-node-${count.index + 1}-volume"
+    terraform = "true"
+    project   = "kube-auto"
+  }
+}
+
+resource "null_resource" "wait_for_worker_instance" {
+  provisioner "local-exec" {
+    command = "aws ec2 wait instance-running --instance-ids ${module.controller.id} --region us-east-1"
   }
 }
