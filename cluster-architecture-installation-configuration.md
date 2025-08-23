@@ -31,7 +31,7 @@ apt-get update && apt-get upgrade
 swapoff -a
 
 # make changes in /etc/fstab to persist disabling of Swap on reboot
-sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+sudo sed -i.bak '/\/swap/s/^/#/' /etc/fstab
 
 
 # Load required Kernel Modules
