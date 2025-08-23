@@ -69,35 +69,7 @@ Doc: https://kubernetes.io/docs/setup/production-environment/container-runtimes/
 We will do this using only three nodes (here is the path to the script https://github.com/murasaki718/CKA-practice-exercises/blob/CKA-v1.33/containerd-install.sh):
 
 ```bash
-# containerd preinstall configuration
-# initial system update and upgrade
-apt-get update && apt-get upgrade
-
-# disabled swap file
-swapoff -a
-
-# make changes in /etc/fstab to persist disabling of Swap on reboot
-sudo sed -i.bak '/\/swap/s/^/#/' /etc/fstab
-
-
-# Load required Kernel Modules
-cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
-overlay
-br_netfilter
-EOF
-
-sudo modprobe overlay
-sudo modprobe br_netfilter
-
-# Setup required sysctl params, these persist across reboots.
-cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
-net.bridge.bridge-nf-call-iptables  = 1
-net.ipv4.ip_forward                 = 1
-net.bridge.bridge-nf-call-ip6tables = 1
-EOF
-
-# Apply sysctl params without reboot
-sudo sysctl --system
+# containerd install configuration
 
 # Install containerd
 ## Set up the repository
