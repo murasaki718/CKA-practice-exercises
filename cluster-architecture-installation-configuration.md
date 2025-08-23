@@ -9,7 +9,7 @@ Doc: https://kubernetes.io/docs/reference/access-authn-authz/rbac/
 <details><summary>Solution</summary>
 <p>
 
-If you don't have cluster nodes yet, check the terraform deployment from below: [Provision underlying infrastructure to deploy a Kubernetes cluster](https://github.com/murasaki718/CKA-practice-exercises/blob/CKA-v1.31/cluster-architecture-installation-configuration.md#provision-underlying-infrastructure-to-deploy-a-kubernetes-cluster)
+If you don't have cluster nodes yet, check the terraform deployment from below: [Provision underlying infrastructure to deploy a Kubernetes cluster](https://github.com/murasaki718/CKA-practice-exercises/blob/CKA-v1.33/cluster-architecture-installation-configuration.md#provision-underlying-infrastructure-to-deploy-a-kubernetes-cluster)
 
 Installation from [scratch using Kelsey Hightower's kubernetes-the-hard-way](https://github.com/kelseyhightower/kubernetes-the-hard-way/) is too time-consuming but not irrelevant. We will be using kubeadm (v1.30.5) to install the Kubernetes cluster.
 
@@ -20,7 +20,7 @@ Installation from [scratch using Kelsey Hightower's kubernetes-the-hard-way](htt
 
 Doc: https://kubernetes.io/docs/setup/production-environment/container-runtimes/
 
-We will do this using only three nodes (here is the path to the script https://github.com/murasaki718/CKA-practice-exercises/blob/CKA-v1.31/containerd-install.sh):
+We will do this using only three nodes (here is the path to the script https://github.com/murasaki718/CKA-practice-exercises/blob/CKA-v1.33/containerd-install.sh):
 
 ```bash
 # containerd preinstall configuration
@@ -68,14 +68,16 @@ sudo mkdir -p /etc/containerd
 containerd config default | sudo tee /etc/containerd/config.toml > /dev/null 2>&1
 sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
 
-# Restart containerd.service
-sudo systemctl restart containerd.service
+# Restart and enable containerd.service
+sudo systemctl restart containerd
+sudo systemctl enable containerd
+
 ```
 
 </p>
 </details>
 
-### Install kubeadm, kubelet and kubectl
+### Install kubeadm, kubelet, and kubectl
 
 <details><summary>Solution</summary>
 <p>
@@ -85,14 +87,11 @@ Doc: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/insta
 Do this on all three nodes:
 
 ```bash
-sudo apt-get update
-sudo apt-get install -y apt-transport-https ca-certificates curl
-
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 sudo apt-get update
-sudo apt-get install -y kubelet=1.30.5-1.1 kubeadm=1.30.5-1.1 kubectl=1.30.5-1.1
+sudo apt-get install -y kubelet=1.32.8-1.1 kubeadm=1.32.8-1.1 kubectl=1.32.8-1.1
 sudo apt-mark hold kubelet kubeadm kubectl
 ```
 
@@ -110,7 +109,7 @@ Make sure the nodes have different hostnames.
 
 On control-plane node:
 ```bash
-sudo kubeadm init --kubernetes-version=1.30.5 --pod-network-cidr=10.244.0.0/16
+sudo kubeadm init --kubernetes-version=1.32.8 --pod-network-cidr=10.244.0.0/16
 ```
 
 Run the output of the init command on the other nodes:
@@ -146,9 +145,9 @@ kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/
 ```bash
 kubectl get nodes
 NAME               STATUS   ROLES           AGE     VERSION
-k8s-controller      Ready    control-plane   3m29s   v1.30.5
-k8s-node-1          Ready    <none>          114s    v1.30.5
-k8s-node-2          Ready    <none>          77s     v1.30.5
+k8s-controller      Ready    control-plane   3m29s   v1.32.8
+k8s-node-1          Ready    <none>          114s    v1.32.8
+k8s-node-2          Ready    <none>          77s     v1.32.8
 ```
 
 </p>
@@ -164,25 +163,25 @@ k8s-node-2          Ready    <none>          77s     v1.30.5
 
 Doc: https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/
 
-After installing Kubernetes v1.31 here: [install](https://github.com/murasaki718/CKA-practice-exercises/blob/CKA-v1.31/cluster-architecture-installation-configuration.md#use-kubeadm-to-install-a-basic-cluster)
+After installing Kubernetes v1.32 here: [install](https://github.com/murasaki718/CKA-practice-exercises/blob/CKA-v1.32/cluster-architecture-installation-configuration.md#use-kubeadm-to-install-a-basic-cluster)
 
-We will now upgrade the cluster to v1.31.
+We will now upgrade the cluster to v1.33.
 
 On control-plane node:
 
 ```bash
-# Add 1.31 repository
-sudo sh -c 'echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /" >> /etc/apt/sources.list.d/kubernetes.list'
+# Add 1.33 repository
+sudo sh -c 'echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /" >> /etc/apt/sources.list.d/kubernetes.list'
 
 # Upgrade kubeadm
 sudo apt-mark unhold kubeadm
-sudo apt-get update && sudo apt-get install -y kubeadm=1.31.1-1.1
+sudo apt-get update && sudo apt-get install -y kubeadm=1.33.4-1.1
 sudo apt-mark hold kubeadm
 
 # Upgrade control-plane node
 kubectl drain k8s-controller --ignore-daemonsets
 sudo kubeadm upgrade plan
-sudo kubeadm upgrade apply v1.31.1
+sudo kubeadm upgrade apply v1.33.1
 
 # Update Network Plugin
 
@@ -194,7 +193,7 @@ kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.1/
 
 # Upgrade kubelet and kubectl
 sudo apt-mark unhold kubelet kubectl
-sudo apt-get update && sudo apt-get install -y kubelet=1.31.1-1.1 kubectl=1.31.1-1.1
+sudo apt-get update && sudo apt-get install -y kubelet=1.33.4-1.1 kubectl=1.33.4-1.1
 sudo apt-mark hold kubelet kubectl
 sudo systemctl daemon-reload
 sudo systemctl restart kubelet
@@ -206,12 +205,12 @@ kubectl uncordon k8s-controller
 On worker nodes:
 
 ```bash
-# Add 1.31 repository
-sudo sh -c 'echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /" >> /etc/apt/sources.list.d/kubernetes.list'
+# Add 1.33 repository
+sudo sh -c 'echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /" >> /etc/apt/sources.list.d/kubernetes.list'
 
 # Upgrade kubeadm
 sudo apt-mark unhold kubeadm
-sudo apt-get update && sudo apt-get install -y kubeadm=1.31.1-1.1
+sudo apt-get update && sudo apt-get install -y kubeadm=1.33.4-1.1
 sudo apt-mark hold kubeadm
 
 # Upgrade the other node
@@ -220,7 +219,7 @@ sudo kubeadm upgrade node
 
 # Upgrade kubelet and kubectl
 sudo apt-mark unhold kubelet kubectl
-sudo apt-get update && sudo apt-get install -y kubelet=1.31.1-1.1 kubectl=1.31.1-1.1
+sudo apt-get update && sudo apt-get install -y kubelet=1.33.4-1.1 kubectl=1.33.4-1.1
 sudo apt-mark hold kubelet kubectl
 sudo systemctl daemon-reload
 sudo systemctl restart kubelet
@@ -229,14 +228,14 @@ sudo systemctl restart kubelet
 kubectl uncordon k8s-node-1
 ```
 
-Verify that the nodes are upgraded to v1.31.1:
+Verify that the nodes are upgraded to v1.33.4:
 
 ```bash
 kubectl get nodes
 NAME               STATUS                     ROLES           AGE   VERSION
-k8s-controller     Ready                      control-plane   15m   v1.31.1
-k8s-node-1         Ready,SchedulingDisabled   <none>          13m   v1.31.1
-k8s-node-2         Ready,SchedulingDisabled   <none>          13m   v1.31.1
+k8s-controller     Ready                      control-plane   15m   v1.33.4
+k8s-node-1         Ready,SchedulingDisabled   <none>          13m   v1.33.4
+k8s-node-2         Ready,SchedulingDisabled   <none>          13m   v1.33.4
 ```
 
 </p>
@@ -279,7 +278,7 @@ You can use any cloud provider (AWS, Azure, GCP, OpenStack, etc.) and multiple t
 We will deploy a three-node cluster, with one control plane node and two worker nodes.
 
 Three Libvirt/KVM nodes (or any cloud provider you are using):
-- k8s-controller: 2 vCPUs, 4GB RAM, 20GB Disk, 192.168.254.11/24
+- k8s-controller:    2 vCPUs, 4GB RAM, 20GB Disk, 192.168.254.11/24
 - k8s-node-1:        2 vCPUs, 2GB RAM, 20GB Disk, 192.168.254.21/24
 - k8s-node-2:        2 vCPUs, 2GB RAM, 20GB Disk, 192.168.254.22/24
 
@@ -299,7 +298,7 @@ We will use a local libvirt/KVM baremetal node with terraform (v1.2.5) to provis
 ```bash
 mkdir terraform
 cd terraform
-wget https://raw.githubusercontent.com/murasaki718/CKA-practice-exercises/CKA-v1.31/terraform/cluster-infra.tf
+wget https://raw.githubusercontent.com/murasaki718/CKA-practice-exercises/CKA-v1.33/terraform/cluster-infra.tf
 terraform init
 terraform plan
 terraform apply
