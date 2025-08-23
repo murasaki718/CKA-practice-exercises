@@ -66,7 +66,7 @@ sudo apt-get install -y containerd
 # Configure containerd defaults
 sudo mkdir -p /etc/containerd
 containerd config default | sudo tee /etc/containerd/config.toml > /dev/null 2>&1
-sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
+sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
 
 # Restart and enable containerd.service
 sudo systemctl restart containerd
