@@ -9,7 +9,7 @@ Doc: https://kubernetes.io/docs/reference/access-authn-authz/rbac/
 <details><summary>Solution</summary>
 <p>
 
-If you don't have cluster nodes yet, check the terraform deployment from below: [Provision underlying infrastructure to deploy a Kubernetes cluster](https://github.com/murasaki718/CKA-practice-exercises/blob/CKA-v1.33/cluster-architecture-installation-configuration.md#provision-underlying-infrastructure-to-deploy-a-kubernetes-cluster)
+If you don't have cluster nodes yet, check the terraform deployment from below: [Provision underlying infrastructure to deploy a Kubernetes cluster](https://github.com/murasaki718/CKA-practice-exercises/blob/v1.33/cluster-architecture-installation-configuration.md#provision-underlying-infrastructure-to-deploy-a-kubernetes-cluster)
 
 Installation from [scratch using Kelsey Hightower's kubernetes-the-hard-way](https://github.com/kelseyhightower/kubernetes-the-hard-way/) is too time-consuming, but not irrelevant. We will be using kubeadm (v1.32.8) to install the Kubernetes cluster.
 
@@ -20,7 +20,7 @@ Installation from [scratch using Kelsey Hightower's kubernetes-the-hard-way](htt
 
 Doc: https://kubernetes.io/docs/setup/production-environment/container-runtimes/
 
-We will do this using only three nodes (here is the path to the script https://github.com/murasaki718/CKA-practice-exercises/blob/CKA-v1.33/containerd-install.sh):
+We will do this using only three nodes (here is the path to the script https://github.com/murasaki718/CKA-practice-exercises/blob/v1.33/containerd-install.sh):
 
 ```bash
 # containerd preinstall configuration
@@ -126,7 +126,7 @@ mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
-# Deloying Kubernetes Cluster Network Plugin using Either 
+# Deploying Kubernetes Cluster Network Plugin using Either 
 
 ## Calico
 kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/calico.yaml
@@ -164,7 +164,7 @@ k8s-node-2          Ready    <none>          77s     v1.32.8
 
 Doc: https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/
 
-After installing Kubernetes v1.32 here: [install](https://github.com/murasaki718/CKA-practice-exercises/blob/CKA-v1.32/cluster-architecture-installation-configuration.md#use-kubeadm-to-install-a-basic-cluster)
+After installing Kubernetes v1.32 here: [install](https://github.com/murasaki718/CKA-practice-exercises/blob/v1.33/cluster-architecture-installation-configuration.md#use-kubeadm-to-install-a-basic-cluster)
 
 We will now upgrade the cluster to v1.33.
 
@@ -247,7 +247,7 @@ k8s-node-2         Ready,SchedulingDisabled   <none>          13m   v1.33.4
 <details><summary>Solution</summary>
 <p>
 
-When we only have one control plane node in your cluster, you cannot upgrade the OS system (with reboot) without losing temporary access to your cluster.
+When we only have one control plane node in your cluster, you cannot upgrade the OS system (with a reboot) without losing temporary access to your cluster.
 
 Here we will upgrade our worker nodes:
 
@@ -259,7 +259,7 @@ sudo apt-mark hold kubeadm kubelet kubectl
 kubectl drain k8s-node-1 --ignore-daemonsets
 sudo apt update && sudo apt upgrade -y # Be careful about container runtime (e.g., docker) upgrade.
 
-# Reboot node if necessary
+# Reboot the node if necessary
 sudo reboot
 
 # Make worker node reschedulable
@@ -289,17 +289,17 @@ OS description:
 $ lsb_release -a
 No LSB modules are available.
 Distributor ID:	Ubuntu
-Description:	Ubuntu 22.04.3 LTS
+Description:	Ubuntu 22.04.5 LTS
 Release:	22.04
 Codename:	jammy
 ```
 
-We will use a local libvirt/KVM baremetal node with terraform (v1.2.5) to provision the three-node cluster described above.
+We will use a local libvirt/KVM baremetal node with Terraform (v1.2.5) to provision the three-node cluster described above.
 
 ```bash
 mkdir terraform
 cd terraform
-wget https://raw.githubusercontent.com/murasaki718/CKA-practice-exercises/CKA-v1.33/terraform/cluster-infra.tf
+wget https://raw.githubusercontent.com/murasaki718/CKA-practice-exercises/v1.33/terraform/cluster-infra.tf
 terraform init
 terraform plan
 terraform apply
