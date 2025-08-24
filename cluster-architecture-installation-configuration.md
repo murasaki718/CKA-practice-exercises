@@ -13,12 +13,12 @@ If you don't have cluster nodes yet, check the terraform deployment from below: 
 
 Installation from [scratch using Kelsey Hightower's kubernetes-the-hard-way](https://github.com/kelseyhightower/kubernetes-the-hard-way/) is too time-consuming, but not irrelevant. We will be using kubeadm (v1.32.8) to install the Kubernetes cluster.
 
-### Default System Preparation
+### Install containerd runtime
 
 <details><summary>Solution</summary>
 <p>
 
-Doc: https://v1-32.docs.kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#swap-configuration
+Doc: https://kubernetes.io/docs/setup/production-environment/container-runtimes/
 
 We will do this using only three nodes (here is the path to the script https://github.com/murasaki718/CKA-practice-exercises/blob/CKA-v1.33/containerd-install.sh):
 
@@ -52,24 +52,6 @@ EOF
 
 # Apply sysctl params without reboot
 sudo sysctl --system
-
-```
-
-</p>
-</details>
-
-
-### Install containerd runtime
-
-<details><summary>Solution</summary>
-<p>
-
-Doc: https://kubernetes.io/docs/setup/production-environment/container-runtimes/
-
-We will do this using only three nodes (here is the path to the script https://github.com/murasaki718/CKA-practice-exercises/blob/CKA-v1.33/containerd-install.sh):
-
-```bash
-# containerd install configuration
 
 # Install containerd
 ## Set up the repository
@@ -112,11 +94,6 @@ echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.
 sudo apt-get update
 sudo apt-get install -y kubelet=1.32.8-1.1 kubeadm=1.32.8-1.1 kubectl=1.32.8-1.1
 sudo apt-mark hold kubelet kubeadm kubectl
-```
-Doc: [(Optional) Enable the kubelet service before running kubeadm](https://v1-32.docs.kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#:~:text=(Optional)%20Enable%20the%20kubelet%20service%20before%20running%20kubeadm%3A)
-
-```bash
-sudo systemctl enable --now kubelet
 ```
 
 </p>
