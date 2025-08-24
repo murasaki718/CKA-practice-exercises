@@ -129,7 +129,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 # Deploying Kubernetes Cluster Network Plugin using Either 
 
 ## Calico
-kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/calico.yaml
+kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.0/manifests/calico.yaml
 
 ## Flannel
 #kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
@@ -187,7 +187,7 @@ sudo kubeadm upgrade apply v1.33.1
 # Update Network Plugin
 
 ## Calico
-kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.1/manifests/calico.yaml
+kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.3/manifests/calico.yaml
 
 ## Flannel
 #kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
