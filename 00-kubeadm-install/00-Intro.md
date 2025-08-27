@@ -69,13 +69,13 @@ You will be evaluated on **five core domains** in Kubernetes administration:
 
 * Online exam with webcam monitoring.
 * Desk must be clear, with only a bottle of water allowed.
-* Breaks are allowed but the timer continues.
+* Breaks are allowed, but the timer continues.
 * Duration: 3 hours; average completion time with preparation: 1.5–2 hours.
 
 ---
 
 **Final Note:**
-If you are new to Kubernetes, allow extra practice time. Experienced Kubernetes users should focus on speed, efficiency, and familiarity with documentation and CLI workflows.
+If you are new to Kubernetes, allow extra time for practice. Experienced Kubernetes users should focus on speed, efficiency, and familiarity with documentation and CLI workflows.
 
 **Good luck!**
 
