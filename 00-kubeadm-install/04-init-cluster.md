@@ -84,8 +84,8 @@ echo "source <(kubectl completion bash)" >> ~/.bashrc
 
 ---
 
-✅ At this point, your base system is ready to join worker nodes to the cluster installation.
-* [Join Worker Node to the Cluster](05-join-node.md)
+✅ At this point, your base system is ready to add a network plugin to the cluster installation.
+* [Add network Plugin](05-network-plugin.md)
   
 ## References
 
