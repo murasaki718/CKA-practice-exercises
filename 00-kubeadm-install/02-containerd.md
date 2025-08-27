@@ -8,7 +8,7 @@ Kubernetes requires a container runtime to run Pods. We will use **containerd**,
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common gnupg lsb-release
 ```
 
 ---
