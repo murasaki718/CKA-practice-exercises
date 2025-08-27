@@ -95,6 +95,6 @@ sudo systemctl enable --now chronyd
 ---
 
 ✅ At this point, your base system is ready for container runtime installation.
-* [Container Runtime Setup (containerd)](containerd.md)
+* [Container Runtime Setup (containerd)](02-containerd.md)
 ---
 
