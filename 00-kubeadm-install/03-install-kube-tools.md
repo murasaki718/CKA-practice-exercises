@@ -50,27 +50,8 @@ echo "source <(kubectl completion bash)" >> ~/.bashrc
 
 ---
 
-## 4. Initialize a Kubernetes Cluster (Optional)
-
-```bash
-sudo kubeadm init --pod-network-cidr=10.244.0.0/16
-mkdir -p $HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
-kubectl get nodes
-```
-
-Install Calico for networking:
-
-```bash
-kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
-```
-
----
-
 ## References
 
 * [Kubernetes Docs](https://kubernetes.io/docs/home/)
-* [Kubeadm Installation Guide](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/)
 
 ---
