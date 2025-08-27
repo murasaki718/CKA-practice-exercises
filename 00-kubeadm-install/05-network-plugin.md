@@ -87,6 +87,9 @@ kubectl exec -it test-pod -- ping <another-pod-IP>
 
 ---
 
+✅ At this point, your base system is ready for adding a worker node to the cluster installation.
+* [Adding Worker Node to the Cluster]()
+
 ## References
 
 * [Kubernetes CNI Overview](https://kubernetes.io/docs/concepts/cluster-administration/networking/)
