@@ -55,6 +55,7 @@ echo "source <(kubectl completion bash)" >> ~/.bashrc
 ## References
 
 * [Kubernetes Docs](https://kubernetes.io/docs/home/)
+* [Installing-kubetools - kubeadm-kubelet-and-kubectl](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl)
 * [Initialize cluster with kubeadm](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/)
 * [Setup Tools - kubeadm init](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/)
 ---
