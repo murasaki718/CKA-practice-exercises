@@ -84,6 +84,9 @@ echo "source <(kubectl completion bash)" >> ~/.bashrc
 
 ---
 
+✅ At this point, your base system is ready to join worker nodes to the cluster installation.
+* [Join Worker Node to the Cluster](05-join-node.md)
+  
 ## References
 
 * [Kubeadm Cluster Initialization](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/)
