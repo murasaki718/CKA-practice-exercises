@@ -112,9 +112,9 @@ kubectl get pods -n kube-system
 
 ## References
 
-* [System Configuration](system-requirements.md)
-* [Container Runtime Setup (containerd)](containerd.md)
-* [Install Kubernetes Tools](install-kube-tools.md)
+* [System Configuration](01-system-requirements.md)
+* [Container Runtime Setup (containerd)](02-containerd.md)
+* [Install Kubernetes Tools](03-install-kube-tools.md)
 * [Kubeadm Worker Node Join](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-join/)
 * [Kubernetes Nodes Overview](https://kubernetes.io/docs/concepts/architecture/nodes/)
 
