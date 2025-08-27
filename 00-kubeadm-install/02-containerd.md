@@ -66,5 +66,5 @@ sudo systemctl status containerd
 ---
 
 ✅ At this point, containerd is installed, configured, and ready for Kubernetes.
-* [Install Kubernetes Tools](install-kube-tools.md)
+* [Install Kubernetes Tools](03-install-kube-tools.md)
 ---
