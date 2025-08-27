@@ -42,7 +42,7 @@ kubelet --version
 ---
 
 ✅ At this point, your base system is ready to initialize cluster installation.
-* [Init Cluster](04-int-cluster.md)
+* [Init Cluster](04-init-cluster.md)
 
 ---
 ## References
