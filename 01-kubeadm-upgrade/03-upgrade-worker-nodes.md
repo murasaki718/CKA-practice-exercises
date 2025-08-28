@@ -129,6 +129,9 @@ kubectl run test-pod --image=busybox --restart=Never -- sleep 3600
 kubectl exec -it test-pod -- ping <another-pod-ip>
 kubectl delete pod test-pod
 ```
+---
+
+✅ Once all worker nodes are upgraded and verified, the cluster is fully upgraded and ready for production workloads.
 
 ---
 
@@ -137,9 +140,3 @@ kubectl delete pod test-pod
 * [Kubeadm Upgrade Docs](https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/)
 * [Kubernetes Version Skew Policy](https://kubernetes.io/docs/setup/release/version-skew-policy/)
 * [Kubernetes Nodes Overview](https://kubernetes.io/docs/concepts/architecture/nodes/)
-
----
-
-✅ Once all worker nodes are upgraded and verified, the cluster is fully upgraded and ready for production workloads.
-
----
