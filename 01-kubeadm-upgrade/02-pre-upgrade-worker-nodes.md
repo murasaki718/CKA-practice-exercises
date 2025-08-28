@@ -90,15 +90,12 @@ apt-cache policy kubeadm
 * Confirm that all worker nodes can safely upgrade without version skew issues.
 
 ---
+✅ After completing these pre-upgrade checks, worker nodes are ready for kubeadm, kubelet, and kubectl upgrades, described in 03-upgrade-worker-nodes.md.
 
+* [Upgrade Worker Nodes](03-upgrade-worker-nodes.md)
+---
 ## References
 
 * [Kubeadm Upgrade Docs](https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/)
 * [Kubernetes Version Skew Policy](https://kubernetes.io/docs/setup/release/version-skew-policy/)
 * [Kubernetes Nodes Overview](https://kubernetes.io/docs/concepts/architecture/nodes/)
-
----
-
-✅ After completing these pre-upgrade checks, worker nodes are ready for **kubeadm, kubelet, and kubectl upgrades**, described in `03-upgrade-worker-nodes.md`.
-
----
