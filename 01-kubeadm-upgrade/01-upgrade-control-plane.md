@@ -151,7 +151,10 @@ kubectl get nodes
 kubectl get pods -A
 kubectl get pods -n kube-system
 ```
+---
 
+✅ After upgrading all control plane nodes, the cluster is ready for **worker node upgrades**, described in `03-upgrade-worker-nodes.md`.
+* [Worker Node Upgrade Pre-check](02-pre-upgrade-worker-nodes.md)
 ---
 
 ## References
@@ -160,8 +163,3 @@ kubectl get pods -n kube-system
 * [Kubernetes Version Skew Policy](https://kubernetes.io/docs/setup/release/version-skew-policy/)
 * [Kubernetes Control Plane Components](https://kubernetes.io/docs/concepts/overview/components/)
 
----
-
-✅ After upgrading all control plane nodes, the cluster is ready for **worker node upgrades**, described in `03-upgrade-worker-nodes.md`.
-
----
