@@ -116,10 +116,12 @@ sudo etcdutl --write-out=table snapshot status /tmp/etcd-backup-*.db
 ```
 
 ---
+✅ At this point, you're ready to restore the etcd snapshot/backup to the system.
+
+* [Restoring etcd](02-etcd-restore.md)
+---
 
 ## References
 
 * [Kubeadm etcd backup](https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#backup-etcd)
 * [etcdctl documentation](https://etcd.io/docs/v3.5/dev-guide/interacting_v3/)
-
----
