@@ -92,14 +92,13 @@ apt-cache policy kubeadm
 
 ---
 
+✅ Once all pre-upgrade checks are complete and backups are confirmed, the control plane node is ready for the upgrade.
+* [Facilitate operating system upgrades](01-upgrade-control-plane.md)
+---
+
 ## References
 
 * [Kubeadm Upgrade Docs](https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/)
 * [Kubernetes Version Skew Policy](https://kubernetes.io/docs/setup/release/version-skew-policy/)
 * [Kubernetes Control Plane Components](https://kubernetes.io/docs/concepts/overview/components/)
 
----
-
-✅ Once all pre-upgrade checks are complete and backups are confirmed, the control plane node is ready for the upgrade.
-
----
