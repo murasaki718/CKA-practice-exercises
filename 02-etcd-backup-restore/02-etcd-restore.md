@@ -1,4 +1,3 @@
-
 ## etcd Restore (Kubernetes)
 
 This guide explains how to **restore your Kubernetes etcd cluster** from a backup snapshot.
@@ -43,7 +42,7 @@ sudo ETCDCTL_API=3 etcdctl snapshot restore /tmp/etcd-backup-*.db \
 
 ---
 
-## 5. Adjust etcd Static Pod Manifest
+## 5. Adjust the etcd Static Pod Manifest
 
 * Ensure the manifest points to the restored `data-dir`:
 
@@ -55,7 +54,7 @@ sudo ETCDCTL_API=3 etcdctl snapshot restore /tmp/etcd-backup-*.db \
 
 ---
 
-## 6. Start kubelet / etcd Pod
+## 6. Start the kubelet / etcd Pod
 
 ```bash
 sudo systemctl start kubelet
@@ -63,7 +62,7 @@ kubectl get pods -n kube-system
 kubectl logs -n kube-system etcd-cp1
 ```
 
-* etcd pod should show `Running`.
+* The etcd pod should show `Running`.
 
 ---
 
@@ -86,6 +85,6 @@ ETCDCTL_API=3 etcdctl --endpoints=$ETCDCTL_ENDPOINTS endpoint health
 
 ---
 
-✅ Once restore is complete, verify workloads, nodes, and etcd health before resuming production operations.
+✅ Once the restore is complete, verify workloads, nodes, and etcd health before resuming production operations.
 
 ---
