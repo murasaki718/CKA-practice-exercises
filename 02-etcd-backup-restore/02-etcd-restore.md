@@ -31,11 +31,11 @@ sudo mkdir -p /var/lib/etcd
 ## 4. Restore Snapshot
 
 ```bash
-sudo ETCDCTL_API=3 etcdctl snapshot restore /tmp/etcd-backup-*.db \
+sudo ETCDCTL_API=3 etcdutl snapshot restore /tmp/etcd-backup-*.db \
   --data-dir /var/lib/etcd \
-  --initial-cluster cp1=https://127.0.0.1:2380 \
+#  --initial-cluster cp1=http://localhost:2380 \
   --initial-cluster-token etcd-cluster-1 \
-  --initial-advertise-peer-urls https://127.0.0.1:2380
+  --initial-advertise-peer-urls http://localhost:2380
 ```
 
 > Replace `cp1` and IPs if multiple control plane nodes exist.
@@ -47,7 +47,7 @@ sudo ETCDCTL_API=3 etcdctl snapshot restore /tmp/etcd-backup-*.db \
 * Ensure the manifest points to the restored `data-dir`:
 
 ```bash
-/etc/kubernetes/manifests/etcd.yaml
+sudo cat /etc/kubernetes/manifests/etcd.yaml | grep "    - --data-dir=/var/lib/etcd"
 ```
 
 * Confirm `data-dir: /var/lib/etcd` is correct.
@@ -78,13 +78,11 @@ ETCDCTL_API=3 etcdctl --endpoints=$ETCDCTL_ENDPOINTS endpoint health
 
 ---
 
+✅ Once the restore is complete, verify workloads, nodes, and etcd health before resuming production operations.
+
+---
+
 ## References
 
 * [Kubeadm etcd restore](https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#restore-etcd)
 * [etcdctl documentation](https://etcd.io/docs/v3.5/dev-guide/interacting_v3/)
-
----
-
-✅ Once the restore is complete, verify workloads, nodes, and etcd health before resuming production operations.
-
----
