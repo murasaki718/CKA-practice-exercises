@@ -50,7 +50,8 @@ sudo apt-get update
 Upgrade kubeadm:
 
 ```bash
-sudo apt-get install -y kubeadm=1.33.4-00
+sudo apt-mark unhold kubeadm
+sudo apt-get install -y kubeadm=1.33.4-1.1
 sudo apt-mark hold kubeadm
 kubeadm version
 ```
@@ -72,7 +73,8 @@ sudo kubeadm upgrade node
 ## 5. Upgrade kubelet and kubectl
 
 ```bash
-sudo apt-get install -y kubelet=1.33.4-00 kubectl=1.33.4-00
+sudo apt-mark unhold kubelet kubectl
+sudo apt-get install -y kubelet=1.33.4-1.1 kubectl=1.33.4-1.1
 sudo apt-mark hold kubelet kubectl
 
 sudo systemctl daemon-reload
